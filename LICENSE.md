@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 valguy
+Copyright (c) 2026 Project-26-27HK1-CT005D05 Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
