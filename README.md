@@ -1,4 +1,4 @@
-# CTU Student Account Management System - ATTT
+# CTU Student Account Management System - InfoSec
 
 > A web application that helps students look up account information, submit account management requests, and communicate with administrators. This project was developed for course CT005D05 during Semester 1 of the 2026-2027 academic year.
 
