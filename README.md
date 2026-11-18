@@ -85,5 +85,5 @@ Anon/publishable key được dùng từ trình duyệt nhưng chỉ phù hợp 
 
 -	Kho mã nguồn kết quả dự án: https://github.com/GH-Courses/26-27hk1-ct005d05-labs-valguypmt/tree/master/project
 -	Kho mã nguồn riêng của dự án: https://github.com/valguypmt/Project-26-27HK1-CT005D05
--	Video giới thiệu dự án trên YouTube: 
+-	Video giới thiệu dự án trên YouTube: https://www.youtube.com/watch?v=jGaZyjvvN3Y
 -	Link bản triển khai thực tế dự án: https://valguypmt.github.io/Project-26-27HK1-CT005D05
