@@ -1,66 +1,66 @@
-# Hệ thống quản lý tài khoản sinh viên CTU - ATTT
+# CTU Student Account Management System - ATTT
 
-> Ứng dụng web hỗ trợ sinh viên tra cứu, gửi yêu cầu quản lý tài khoản và trao đổi với quản trị viên. Dự án học phần CT005D05, học kỳ 1 năm học 2026–2027.
+> A web application that helps students look up account information, submit account management requests, and communicate with administrators. This project was developed for course CT005D05 during Semester 1 of the 2026-2027 academic year.
 
-## Tổng quan
+## Overview
 
-Ứng dụng gồm trang tra cứu công khai, quy trình xác minh email sinh viên và trang quản trị. Giao diện được xây dựng bằng HTML, CSS và JavaScript thuần; Supabase cung cấp xác thực và các chức năng dữ liệu thông qua RPC.
+The application includes a public account lookup page, a student email verification process, and an administration page. The interface is built with plain HTML, CSS, and JavaScript; Supabase provides authentication and data functions through RPC.
 
-## Tính năng
+## Features
 
-- **Tra cứu tài khoản:** Tra cứu theo email `@student.ctu.edu.vn` và mật khẩu tài khoản; hiển thị tên tài khoản và trạng thái.
-- **Đăng ký yêu cầu:** Xác minh email bằng OTP, gửi tên tài khoản và yêu cầu để quản trị viên xét duyệt.
-- **Gửi phản hồi:** Sinh viên gửi yêu cầu, xem trạng thái và phản hồi của quản trị viên, hoặc xóa phản hồi của mình. Giao diện giới hạn tối đa 3 phản hồi hiển thị cho mỗi người dùng.
-- **Quản trị:** Đăng nhập quản trị có bước OTP; xem, tìm kiếm, lọc, thêm, cập nhật hoặc xóa tài khoản và xử lý phản hồi.
-- **Giao diện giới thiệu:** Có phần giới thiệu dự án, hình ảnh, video và câu hỏi thường gặp.
+- **Account lookup:** Look up accounts by an `@student.ctu.edu.vn` email address and account password; display the account name and status.
+- **Registration requests:** Verify email with OTP and submit an account name and request for administrator approval.
+- **Submit feedback:** Students can submit requests, view request statuses and administrator feedback, or delete their own feedback. The interface limits each user to a maximum of three visible feedback entries.
+- **Administration:** Moderator login with an OTP step; view, search, filter, add, update, or delete accounts and process feedback.
+- **Introduction interface:** Includes project introduction, images, videos, and a frequently asked questions section.
 
-## Công nghệ
+## Technologies
 
-- HTML, CSS và JavaScript thuần
+- Plain HTML, CSS, and JavaScript
 - Supabase Auth
-- Supabase PostgREST RPC và PostgreSQL
+- Supabase PostgREST RPC and PostgreSQL
 
-## Cấu trúc dự án
+## Project Structure
 
 ```text
 .
-├── index.html       # Trang chủ và tra cứu tài khoản
+├── index.html       # Home page and account lookup
 ├── index.css
 ├── index.js
-├── user.html        # Xác minh email, đăng ký và phản hồi
+├── user.html        # Email verification, registration, and feedback
 ├── user.css
 ├── user.js
-├── moderator.html   # Trang quản trị
+├── moderator.html   # Administration page
 ├── moderator.css
 ├── moderator.js
-├── images/          # Logo và hình ảnh giao diện
+├── images/          # Logo and interface images
 └── README.md
 ```
 
+## Supabase Configuration
 
-## Cấu hình Supabase
+The browser reads the project URL and anon key from `index.js`. When running a copy of the project, replace those values with the URL and publishable/anon key of your Supabase project. Do not put a service-role key, database password, or secret token in frontend code.
 
-Trình duyệt đọc URL dự án và anon key từ `index.js`. Khi chạy bản sao của dự án, thay các giá trị đó bằng URL và publishable/anon key của dự án Supabase của bạn. Không đặt service-role key, mật khẩu cơ sở dữ liệu hoặc token bí mật trong mã frontend.
+The backend must be created and configured separately in Supabase. The frontend currently calls several RPC functions, including:
 
-Backend cần được tạo và cấu hình riêng trong Supabase. Mã frontend hiện gọi một số RPC như:
+- Students: `lookup_user_by_email`, `get_my_registration_status`, `submit_registration_request`, `list_my_feedback`, `submit_my_feedback`, `delete_my_feedback`.
+- Moderators: `list_managed_users`, `create_user_with_password`, `update_user_details`, `set_user_password`, `delete_managed_user`, `list_feedback_for_moderator`, `update_feedback_for_moderator`, `delete_feedback_for_moderator`.
 
-- Sinh viên: `lookup_user_by_email`, `get_my_registration_status`, `submit_registration_request`, `list_my_feedback`, `submit_my_feedback`, `delete_my_feedback`.
-- Quản trị viên: `list_managed_users`, `create_user_with_password`, `update_user_details`, `set_user_password`, `delete_managed_user`, `list_feedback_for_moderator`, `update_feedback_for_moderator`, `delete_feedback_for_moderator`.
+Moderator session functions and additional data constraints must also be configured in Supabase. **The SQL schema and complete RPC function definitions are not currently included in this repository**, so configuring only the frontend is not enough to build a new backend. Do not run the demo with real data before setting up and testing access permissions, RLS, and the RPC functions.
 
-Các hàm quản lý phiên moderator và các ràng buộc dữ liệu bổ sung cũng cần được cấu hình phía Supabase. **Schema SQL và định nghĩa đầy đủ các hàm RPC hiện chưa có trong repository này**, nên chỉ cấu hình frontend là chưa đủ để dựng backend mới. Không chạy bản demo với dữ liệu thật trước khi thiết lập và kiểm tra quyền truy cập, RLS và các hàm RPC.
-
-Để cấp quyền quản trị, tài khoản cần có `role: moderator` trong `app_metadata`. Quản trị viên dự án có thể đặt hoặc gỡ role trong Supabase SQL Editor bằng cách thay email mẫu dưới đây:
+To grant moderator privileges, the account must have `role: moderator` in `app_metadata`. Project moderators can set or remove the role in the Supabase SQL Editor by replacing the sample email below:
 
 ```sql
--- Cấp quyền moderator
+-- Grant moderator privileges
 UPDATE auth.users
 SET raw_app_meta_data =
   COALESCE(raw_app_meta_data, '{}'::jsonb)
   || '{"role":"moderator"}'::jsonb
 WHERE lower(email) = lower('moderator@example.com');
 ```
+
 ```sql
--- Gỡ quyền moderator
+-- Remove moderator privileges
 UPDATE auth.users
 SET raw_app_meta_data =
   COALESCE(raw_app_meta_data, '{}'::jsonb) - 'role'
@@ -68,22 +68,22 @@ WHERE lower(email) = lower('moderator@example.com')
   AND raw_app_meta_data ->> 'role' = 'moderator';
 ```
 
-Chỉ người quản lý dự án có quyền truy cập SQL Editor mới nên thực hiện các thao tác này. Không đưa thông tin đăng nhập quản trị hoặc khóa bí mật vào repository.
+Only project managers with SQL Editor access should perform these operations. Do not put moderator login information or secret keys in the repository.
 
-## Lưu ý bảo mật
+## Security Notes
 
-Đây là dự án học tập/minh họa, không phải hệ thống sẵn sàng xử lý thông tin xác thực thật. Quy trình hiện tại cho phép gửi mật khẩu tài khoản để quản trị viên xét duyệt và có giao diện hiển thị mật khẩu; không dùng mật khẩu thật hoặc dữ liệu cá nhân thật khi trình diễn. Một hệ thống thực tế nên để người dùng tự xác thực và đặt mật khẩu qua nhà cung cấp danh tính, không lưu mật khẩu dạng có thể xem lại.
+This is a learning/demonstration project, not a system ready to process real authentication information. The current workflow allows account passwords to be submitted for administrator review and includes an interface that displays passwords. Do not use real passwords or personal data during demonstrations. A production system should allow users to authenticate and set passwords through an identity provider rather than storing passwords in a recoverable form.
 
-Anon/publishable key được dùng từ trình duyệt nhưng chỉ phù hợp để công khai khi chính sách RLS và quyền thực thi RPC đã được kiểm tra. Không bao giờ công khai service-role key. Trước khi chuyển repository sang public, cần rà soát lịch sử Git và xóa/thu hồi mọi bí mật hoặc dữ liệu thật đã từng được commit.
+Anon/publishable keys are used in the browser but should only be exposed after RLS policies and RPC execution permissions have been tested and verified. Never expose a service-role key. Before making the repository public, review Git history and remove or revoke any secrets or real data that may have been committed.
 
-## Nhóm thực hiện
+## Development Team
 
-- **Phạm Minh Thông (B2605470), Đại học Cần Thơ:** Tìm hiểu và phát triển các script, chức năng cốt lõi.
-- **Phạm Duy Thái (B2605464), Đại học Cần Thơ:** Thiết kế giao diện, soạn báo cáo và giới thiệu sản phẩm.
+- **Pham Minh Thong (B2605470), Can Tho University:** Researched and developed scripts and core functions.
+- **Pham Duy Thai (B2605464), Can Tho University:** Designed the interface and prepared the report and product introduction.
 
-## Liên kết
+## Links
 
--	Kho mã nguồn kết quả dự án: https://github.com/GH-Courses/26-27hk1-ct005d05-labs-valguypmt/tree/master/project
--	Kho mã nguồn riêng của dự án: https://github.com/valguypmt/Project-26-27HK1-CT005D05
--	Video giới thiệu dự án trên YouTube: https://www.youtube.com/watch?v=jGaZyjvvN3Y
--	Link bản triển khai thực tế dự án: https://valguypmt.github.io/Project-26-27HK1-CT005D05
+- Project result source repository: https://github.com/GH-Courses/26-27hk1-ct005d05-labs-valguypmt/tree/master/project
+- Project's private source repository: https://github.com/valguypmt/Project-26-27HK1-CT005D05
+- Project introduction video on YouTube: https://www.youtube.com/watch?v=jGaZyjvvN3Y
+- Live project deployment: https://valguypmt.github.io/Project-26-27HK1-CT005D05
