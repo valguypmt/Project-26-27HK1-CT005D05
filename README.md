@@ -34,6 +34,7 @@ The application includes a public account lookup page, a student email verificat
 ├── moderator.css
 ├── moderator.js
 ├── images/          # Logo and interface images
+├── documents/       # Doctuments of the projects
 ├── LICENSE.md
 └── README.md
 ```
