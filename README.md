@@ -88,4 +88,4 @@ Anon/publishable keys are used in the browser but should only be exposed after R
 - Project result source repository: https://github.com/GH-Courses/26-27hk1-ct005d05-labs-valguypmt/tree/master/project
 - Project's private source repository: https://github.com/valguypmt/Project-26-27HK1-CT005D05
 - Project introduction video on YouTube: https://www.youtube.com/watch?v=jGaZyjvvN3Y
-- Live project deployment: https://valguypmt.github.io/Project-26-27HK1-CT005D05
+- Live project deployment: https://ct005d05.vercel.app/
