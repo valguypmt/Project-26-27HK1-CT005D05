@@ -34,9 +34,7 @@ The application includes a public account lookup page, a student email verificat
 ├── moderator.css
 ├── moderator.js
 ├── images/          # Logo and interface images
-├── documents/       # Doctuments of the project
-├── LICENSE.md
-└── README.md
+└── documents/       # Doctuments of the project
 ```
 
 ## Supabase Configuration
