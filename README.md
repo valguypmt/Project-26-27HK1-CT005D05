@@ -14,7 +14,7 @@ The application includes a public account lookup page, a student email verificat
 - **Administration:** Moderator login with an OTP step; view, search, filter, add, update, or delete accounts and process feedback.
 - **Introduction interface:** Includes project introduction, images, videos, and a frequently asked questions section.
 
-## Technologies
+## Built With
 
 - Plain HTML, CSS, and JavaScript
 - Supabase Auth
