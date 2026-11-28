@@ -1,89 +1,142 @@
 # CTU Student Account Management System - InfoSec
 
-> A web application that helps students look up account information, submit account management requests, and communicate with administrators. This project was developed for course CT005D05 during Semester 1 of the 2026-2027 academic year.
+> A course project for CT005D05 (Semester 1, 2026–2027). This independent student project is not affiliated with Can Tho University.
 
 ## Overview
 
-The application includes a public account lookup page, a student email verification process, and an administration page. The interface is built with plain HTML, CSS, and JavaScript; Supabase provides authentication and data functions through RPC.
+A static web application for student email verification, account requests, password recovery, account-status lookup, and feedback. The frontend uses HTML, CSS, and JavaScript; Supabase provides authentication, PostgreSQL, Row Level Security (RLS), and database RPCs.
 
 ## Features
 
-- **Account lookup:** Look up accounts by an `@student.ctu.edu.vn` email address and account password; display the account name and status.
-- **Registration requests:** Verify email with OTP and submit an account name and request for administrator approval.
-- **Submit feedback:** Students can submit requests, view request statuses and administrator feedback, or delete their own feedback. The interface limits each user to a maximum of three visible feedback entries.
-- **Administration:** Moderator login with an OTP step; view, search, filter, add, update, or delete accounts and process feedback.
-- **Introduction interface:** Includes project introduction, images, videos, and a frequently asked questions section.
+- **Account lookup:** Sign in with a student email and website password to view the account name and request status.
+- **Registration:** Verify an `@student.ctu.edu.vn` email with an 8-digit OTP, then submit an account-name request for moderator review.
+- **Password recovery:** Verify an email OTP and set a new website password through Supabase Auth.
+- **Feedback:** Submit and track feedback, read moderator replies, or delete your own feedback. Each student can have up to three feedback items.
+- **Moderator tools:** Sign in with a password and email OTP; review, search, filter, create, update, and remove account records; manage feedback.
+- **Project information:** Browse the introduction, images, video, and FAQ.
 
 ## Built With
 
-- Plain HTML, CSS, and JavaScript
+- HTML, CSS, and JavaScript
 - Supabase Auth
-- Supabase PostgREST RPC and PostgreSQL
+- Supabase PostgreSQL, RLS, and PostgREST RPCs
 
 ## Project Structure
 
 ```text
 .
-├── index.html       # Home page and account lookup
-├── index.css
-├── index.js
-├── user.html        # Email verification, registration, and feedback
-├── user.css
-├── user.js
-├── moderator.html   # Administration page
-├── moderator.css
-├── moderator.js
-├── images/          # Logo and interface images
-└── documents/       # Doctuments of the project
+├── index.html                         # Home page and account lookup
+├── user.html                          # Student registration, recovery, and feedback
+├── moderator.html                     # Moderator dashboard
+├── public/                            # Media assets
+├── src/
+│   ├── index.css / index.js           # Home page styles and behavior
+│   ├── user.css / user.js             # Student page styles and behavior
+│   └── moderator.css / moderator.js   # Moderator page styles and behavior
+└── supabase/
+    ├── config.toml                    # Local Supabase Auth defaults
+    └── migrations/
+        └── 20261128150000_secure_account_workflow.sql
 ```
 
-## Supabase Configuration
+## Supabase Setup
 
-The browser reads the project URL and anon key from `index.js`. When running a copy of the project, replace those values with the URL and publishable/anon key of your Supabase project. Do not put a service-role key, database password, or secret token in frontend code.
+Follow these steps to create a fresh backend for your own copy.
 
-The backend must be created and configured separately in Supabase. The frontend currently calls several RPC functions, including:
+### 1. Create a Supabase project
 
-- Students: `lookup_user_by_email`, `get_my_registration_status`, `submit_registration_request`, `list_my_feedback`, `submit_my_feedback`, `delete_my_feedback`.
-- Moderators: `list_managed_users`, `create_user_with_password`, `update_user_details`, `set_user_password`, `delete_managed_user`, `list_feedback_for_moderator`, `update_feedback_for_moderator`, `delete_feedback_for_moderator`.
+Fork or clone this repository, then create a project in the [Supabase Dashboard](https://supabase.com/dashboard). Save the database password somewhere private.
 
-Moderator session functions and additional data constraints must also be configured in Supabase. **The SQL schema and complete RPC function definitions are not currently included in this repository**, so configuring only the frontend is not enough to build a new backend. Do not run the demo with real data before setting up and testing access permissions, RLS, and the RPC functions.
+### 2. Run the database migration and enable RLS
 
-To grant moderator privileges, the account must have `role: moderator` in `app_metadata`. Project moderators can set or remove the role in the Supabase SQL Editor by replacing the sample email below:
+In the Dashboard, open **SQL Editor → New query**. Open [`supabase/migrations/20261128150000_secure_account_workflow.sql`](./supabase/migrations/20261128150000_secure_account_workflow.sql), copy the **entire file** into the query, and run it once. Confirm that it completes successfully.
 
-```sql
--- Grant moderator privileges
-UPDATE auth.users
-SET raw_app_meta_data =
-  COALESCE(raw_app_meta_data, '{}'::jsonb)
-  || '{"role":"moderator"}'::jsonb
-WHERE lower(email) = lower('moderator@example.com');
+The migration creates the account, feedback, and moderator-session tables; enables and forces RLS; removes direct browser access to those tables; and creates the RPC functions used by the site. The frontend accesses data through these RPCs. Do not disable RLS or grant `anon` direct access to the tables.
+
+> **Existing database?** Back it up and review the migration before running it. The migration removes obsolete password-related functions, but does not drop `public.users` or delete legacy `password_ciphertext` values. It can stop if duplicate normalized emails or account names need to be resolved.
+
+This guide uses the Dashboard SQL Editor. Manually running SQL there does not add the migration to Supabase CLI history. If you later use `supabase db push` or automated migration deployment, reconcile migration history first to avoid applying the same migration twice.
+
+### 3. Configure Auth, OTP, and email
+
+In **Authentication** settings:
+
+1. Enable the **Email** provider, email sign-ups, and email confirmations.
+2. Set email OTPs to **8 digits**, set a suitable expiry, and set the minimum password length to **8 characters**.
+3. Configure SMTP if you need reliable email delivery.
+4. In the **Confirm signup** and **Reset Password** email templates, make sure to include `{{ .Token }}`. The project expects an OTP.
+5. Set the **Site URL** to your deployed site. Add your local and deployed URLs to the allowed redirect URLs. For the local server in step 6, add:
+
+   ```text
+   http://localhost:8000/**
+   http://127.0.0.1:8000/**
+   ```
+
+   For GitHub Pages, add a pattern such as `https://<username>.github.io/<repository>/**`.
+
+[`supabase/config.toml`](./supabase/config.toml) sets an 8-digit OTP for local Supabase development. Hosted Auth settings must still be configured in the Dashboard.
+
+### 4. Add your project URL and public key
+
+In **Project Settings → API**, copy your **Project URL** and **anon/public key** (also called a publishable key). Replace the values at the top of both:
+
+- [`src/index.js`](./src/index.js)
+- [`src/moderator.js`](./src/moderator.js)
+
+The anon/publishable key is intended for browser use. Never put a **service-role key**, database password, or other secret in frontend code or GitHub. RLS and the migration's RPC checks protect the database.
+
+### 5. Create a moderator
+
+1. In **Authentication → Users**, create the moderator's Auth user and confirm its email.
+2. In **SQL Editor**, grant that user the moderator role. Replace the sample email and run:
+
+   ```sql
+   UPDATE auth.users
+   SET raw_app_meta_data =
+     COALESCE(raw_app_meta_data, '{}'::jsonb) || '{"role":"moderator"}'::jsonb
+   WHERE lower(email) = lower('moderator@example.com')
+   RETURNING email;
+   ```
+
+   Check that the query returns the moderator's email. Moderator actions require this role and email OTP verification. Only trusted project managers should run this query; never assign the role from browser code.
+
+### 6. Run the site locally
+
+From the repository folder, start a static server:
+
+```powershell
+python -m http.server 8000
 ```
 
-```sql
--- Remove moderator privileges
-UPDATE auth.users
-SET raw_app_meta_data =
-  COALESCE(raw_app_meta_data, '{}'::jsonb) - 'role'
-WHERE lower(email) = lower('moderator@example.com')
-  AND raw_app_meta_data ->> 'role' = 'moderator';
-```
+Open [http://localhost:8000/index.html](http://localhost:8000/index.html). Use HTTP instead of opening the HTML files with `file://` so Auth redirects work.
 
-Only project managers with SQL Editor access should perform these operations. Do not put moderator login information or secret keys in the repository.
+### 7. Test the main flows
+
+Use test accounts and verify:
+
+1. Register with a confirmed `@student.ctu.edu.vn` email and submit an account-name request.
+2. Sign in on the home page to check the request status.
+3. Sign in to the moderator page and approve the request.
+4. Test password recovery with a new 8-digit OTP.
+5. Send feedback and confirm it appears in the moderator dashboard.
+
+## GitHub and Deployment
+
+Push your copy to GitHub. Optionally connect the repository through Supabase's GitHub integration to work with the `supabase/migrations/` folder. Linking GitHub alone does not run SQL or configure Auth, SMTP, redirect URLs, or moderator roles.
+
+The site is static and can be deployed with GitHub Pages or another static host. After deployment, add the site's URL to Supabase's allowed redirects. Review all files and Git history for secrets or personal data before making the repository public.
+
+## Troubleshooting
+
+- **OTP not received:** Check Spam, confirm the email templates include `{{ .Token }}`, and verify SMTP and redirect URL settings.
+- **“Invalid login credentials”:** Check the email and website password. This is a Supabase Auth sign-in error, not an account-status lookup result. Use password recovery if needed.
+- **“Could not find function” / schema-cache error:** Confirm the full migration ran successfully, wait for the API schema to refresh, then reload the site.
+- **SQL migration reports duplicate email or account names:** Resolve the duplicates in the existing database before rerunning the migration.
 
 ## Security Notes
 
-This is a learning/demonstration project, not a system ready to process real authentication information. The current workflow allows account passwords to be submitted for administrator review and includes an interface that displays passwords. Do not use real passwords or personal data during demonstrations. A production system should allow users to authenticate and set passwords through an identity provider rather than storing passwords in a recoverable form.
-
-Anon/publishable keys are used in the browser but should only be exposed after RLS policies and RPC execution permissions have been tested and verified. Never expose a service-role key. Before making the repository public, review Git history and remove or revoke any secrets or real data that may have been committed.
-
-## Development Team
-
-- **Pham Minh Thong (B2605470), Can Tho University:** Researched and developed scripts and core functions.
-- **Pham Duy Thai (B2605464), Can Tho University:** Designed the interface and prepared the report and product introduction.
-
-## Links
-
-- Project result source repository: https://github.com/GH-Courses/26-27hk1-ct005d05-labs-valguypmt/tree/master/project
-- Project's private source repository: https://github.com/valguypmt/Project-26-27HK1-CT005D05
-- Project introduction video on YouTube: https://www.youtube.com/watch?v=jGaZyjvvN3Y
-- Live project deployment: https://valguypmt.github.io/Project-26-27HK1-CT005D05/
+- The `public.users` table stores email, account name, and status. Supabase Auth manages passwords; the site cannot view or recover an old password.
+- Password recovery uses a generic response so the site does not reveal whether an email has an account.
+- The anon/publishable key is public; the service-role key and database password are secret.
+- This is a learning project, not production identity management. Use test data and unique passwords; never reuse a CTU or other important password.
+- Review student identifiers, documents, images, and usage rights before publishing.

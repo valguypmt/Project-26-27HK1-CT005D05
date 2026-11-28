@@ -1,0 +1,11 @@
+project_id = "project-26-27hk1-ct005d05"
+
+[auth]
+enabled = true
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+otp_length = 8
+otp_expiry = 3600

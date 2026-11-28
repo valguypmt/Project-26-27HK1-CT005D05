@@ -144,6 +144,13 @@
     border-color: var(--accent-blue);
   }
 
+  .lookup-help {
+    margin: -8px 0 0;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
   .lookup-btn-search {
     display: inline-flex;
     align-items: center;
@@ -157,6 +164,7 @@
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    text-decoration: none;
     transition: background-color 0.2s ease, transform 0.1s ease;
   }
 
@@ -218,6 +226,7 @@
   }
 
   .btn-join-big {
+    display: block;
     width: 100%;
     padding: 16px;
     background-color: transparent;
@@ -228,6 +237,8 @@
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-decoration: none;
+    text-align: center;
   }
 
   .btn-join-big:hover {
@@ -343,7 +354,7 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background-image: url('images/bird.jpg');
+  background-image: url('../public/bird.webp');
   background-size: cover;
   background-position: center;
 }
@@ -491,21 +502,21 @@ ul > li::marker {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: translateX(0);
-  transition: transform 750ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 1;
+  transition: opacity 750ms ease;
   cursor: zoom-in;
 }
 
 .section-two-image-entering {
-  transform: translateX(100%);
+  opacity: 0;
 }
 
 .section-two-image-entering.is-visible {
-  transform: translateX(0);
+  opacity: 1;
 }
 
 .section-two-image.is-exiting {
-  transform: translateX(-100%);
+  opacity: 0;
 }
 
 .image-lightbox {

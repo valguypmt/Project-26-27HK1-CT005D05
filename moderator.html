@@ -5,10 +5,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="theme-color" content="#0c1114">
 	<meta name="description" content="Trang quản trị hệ thống tài khoản sinh viên CTU - ATTT.">
-	<link rel="icon" type="image/png" href="images/logo.png">
+	<link rel="icon" type="image/png" href="public/logo.png">
 	<title>CTU - ATTT | Quản trị hệ thống</title>
-	<link rel="stylesheet" href="moderator.css">
-	<script src="moderator.js" defer></script>
+	<link rel="stylesheet" href="src/moderator.css">
+	<script src="src/moderator.js" defer></script>
 </head>
 <body>
 	<div class="moderator-background" aria-hidden="true"></div>
@@ -16,7 +16,7 @@
 
 	<header class="topbar">
 		<div class="brand">
-			<img class="brand-logo" src="images/logo.png" alt="">
+			<img class="brand-logo" src="public/logo.png" alt="">
 			<span class="brand-label">Hệ thống quản lý tài khoản CTU - ATTT<small>Trang quản trị</small></span>
 		</div>
 		<a class="home-link" href="index.html">Về trang chính</a>
@@ -35,7 +35,7 @@
 					<label for="moderatorPassword">Mật khẩu quản trị</label>
 					<div class="password-input-control">
 						<input id="moderatorPassword" type="password" autocomplete="current-password" required>
-						<button class="password-visibility-toggle" type="button" aria-label="Hiện mật khẩu" aria-controls="moderatorPassword" aria-pressed="false"><img src="images/eye-closed.png" alt=""></button>
+						<button class="password-visibility-toggle" type="button" aria-label="Hiện mật khẩu" aria-controls="moderatorPassword" aria-pressed="false"><img src="public/eye-closed.png" alt=""></button>
 					</div>
 				</div>
 				<button id="signInButton" class="add-account-button" type="submit">Kiểm tra &amp; gửi OTP</button>
@@ -102,13 +102,7 @@
 				<label for="accountName">Tên tài khoản</label>
 				<input id="accountName" name="accountName" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" title="Tên tài khoản dài 3–16 ký tự, chỉ gồm chữ không dấu, số và dấu gạch dưới (_)." autocomplete="username" placeholder="Nhập tên tài khoản" required>
 			</div>
-			<div class="form-field">
-				<label for="accountPassword">Mật khẩu (6–20 ký tự)</label>
-				<div class="password-input-control">
-					<input id="accountPassword" name="password" type="password" minlength="6" maxlength="20" pattern="[\x21-\x7E]{6,20}" title="Mật khẩu dài 6–20 ký tự, không có dấu cách hoặc dấu tiếng Việt." autocomplete="new-password" required>
-					<button class="password-visibility-toggle" type="button" aria-label="Hiện mật khẩu" aria-controls="accountPassword" aria-pressed="false"><img src="images/eye-closed.png" alt=""></button>
-				</div>
-			</div>
+			<p class="password-notice">Tài khoản quản lý chỉ lưu email, tên tài khoản và trạng thái; không lưu mật khẩu bên ngoài.</p>
 			<div class="form-field">
 				<label for="accountStatus">Trạng thái</label>
 				<select id="accountStatus" name="status" required>
@@ -139,12 +133,11 @@
 							<tr>
 								<th scope="col">Email sinh viên</th>
 								<th scope="col">Tên tài khoản</th>
-								<th scope="col">Mật khẩu</th>
 								<th scope="col">Thao tác</th>
 							</tr>
 						</thead>
 						<tbody id="pendingUsersTableBody">
-							<tr><td class="table-message" colspan="4">Đang tải danh sách...</td></tr>
+							<tr><td class="table-message" colspan="3">Đang tải danh sách...</td></tr>
 						</tbody>
 					</table>
 				</div>
@@ -177,27 +170,6 @@
 				</form>
 			</section>
 
-			<!-- đặt hoặc đổi mật khẩu -->
-			<section id="changePasswordPanel" class="pending-account-editor" aria-labelledby="changePasswordTitle" hidden>
-				<h2 id="changePasswordTitle">Đặt mật khẩu mới (6–20 ký tự)</h2>
-				<p id="changePasswordDescription" class="password-notice">Mật khẩu hiện tại được lưu trong hồ sơ tài khoản và có thể xem qua trang đăng ký đã xác minh email.</p>
-				<form id="changePasswordForm" class="add-account-form">
-					<div class="form-field">
-						<label for="changePasswordEmail">Email sinh viên</label>
-						<input id="changePasswordEmail" type="email" readonly>
-					</div>
-					<div class="form-field">
-						<label for="changePasswordValue">Nhập lại Mật khẩu (6–20 ký tự)</label>
-						<div class="password-input-control">
-							<input id="changePasswordValue" type="password" minlength="6" maxlength="20" pattern="[\x21-\x7E]{6,20}" title="Mật khẩu dài 6–20 ký tự, không có dấu cách hoặc dấu tiếng Việt." autocomplete="new-password" required>
-							<button class="password-visibility-toggle" type="button" aria-label="Hiện mật khẩu" aria-controls="changePasswordValue" aria-pressed="false"><img src="images/eye-closed.png" alt=""></button>
-						</div>
-					</div>
-					<button id="changePasswordButton" class="add-account-button" type="submit">Lưu mật khẩu mới</button>
-					<button id="cancelChangePasswordButton" class="cancel-password-button" type="button">Hủy</button>
-					<p id="changePasswordMessage" class="form-message" role="status" aria-live="polite"></p>
-				</form>
-			</section>
 		</section>
 
 		<!-- tìm và quản lý ds tk -->
@@ -260,6 +232,7 @@
 						<option value="all">Mọi chủ đề</option>
 						<option value="Thay đổi mật khẩu">Thay đổi mật khẩu</option>
 						<option value="Thay đổi tên tài khoản">Thay đổi tên tài khoản</option>
+						<option value="Hỗ trợ hệ thống">Hỗ trợ hệ thống</option>
 						<option value="Vấn đề khác">Vấn đề khác</option>
 					</select>
 					<label class="visually-hidden" for="feedbackReplyAuthorFilter">Lọc theo người trả lời</label>
